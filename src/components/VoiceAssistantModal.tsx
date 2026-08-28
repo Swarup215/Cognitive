@@ -99,7 +99,7 @@ const ASSISTANT_TRANSLATIONS: Record<string, any> = {
 };
 
 export const VoiceAssistantModal: React.FC = () => {
-  const { voiceModalOpen, setVoiceModalOpen, patient, reminders, navigate, updatePatient, t, speak } = useApp();
+  const { voiceModalOpen, setVoiceModalOpen, patient, reminders, navigate, updatePatient, t, speak, stopSpeech } = useApp();
   
   const displayLang = patient.preferredLanguage;
   const voiceLang = patient.voiceLanguage || patient.preferredLanguage;
@@ -134,7 +134,13 @@ export const VoiceAssistantModal: React.FC = () => {
       speak(currentVoiceGreeting);
     } else {
       stopListening();
+      stopSpeech();
     }
+
+    return () => {
+      stopListening();
+      stopSpeech();
+    };
   }, [voiceModalOpen, displayLang, voiceLang]);
 
   // Setup Web Speech Recognition if supported
@@ -294,6 +300,12 @@ export const VoiceAssistantModal: React.FC = () => {
     handleVoiceCommand(commandText);
   };
 
+  const handleClose = () => {
+    stopListening();
+    stopSpeech();
+    setVoiceModalOpen(false);
+  };
+
   if (!voiceModalOpen) return null;
 
   return (
@@ -303,12 +315,16 @@ export const VoiceAssistantModal: React.FC = () => {
       role="dialog"
       aria-modal="true"
       aria-labelledby="voice-modal-title"
+      onClick={handleClose}
     >
-      <div className="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl border border-emerald-100 relative overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div 
+        className="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl border border-emerald-100 relative overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+        onClick={(e) => e.stopPropagation()}
+      >
         
         {/* Close Button */}
         <button
-          onClick={() => setVoiceModalOpen(false)}
+          onClick={handleClose}
           className="absolute top-5 right-5 p-2.5 rounded-full bg-emerald-50 text-emerald-800 hover:bg-emerald-100 hover:text-emerald-950 transition-colors"
           id="close-voice-modal-btn"
           aria-label="Close Voice Assistant"

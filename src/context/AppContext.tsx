@@ -21,7 +21,7 @@ import {
   INITIAL_COGNITIVE_METRICS,
   RECENT_GAME_SESSIONS 
 } from '../data/regionalData';
-import { playReminderDoneSound, speakGentleText } from '../utils/audioSynth';
+import { playReminderDoneSound, speakGentleText, stopSpeech } from '../utils/audioSynth';
 
 interface AppContextType {
   currentView: AppView;
@@ -55,6 +55,7 @@ interface AppContextType {
   prevJudgeDemoStep: () => void;
   closeJudgeDemo: () => void;
   speak: (text: string) => void;
+  stopSpeech: () => void;
   resetAllData: () => void;
 }
 
@@ -225,6 +226,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const t: TranslationStrings = translations[patient.preferredLanguage] || translations.en;
 
   const navigate = (view: AppView) => {
+    stopSpeech();
     setCurrentView(view);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -433,6 +435,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         prevJudgeDemoStep,
         closeJudgeDemo,
         speak,
+        stopSpeech,
         resetAllData,
       }}
     >

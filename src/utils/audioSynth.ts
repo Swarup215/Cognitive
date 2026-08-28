@@ -82,6 +82,22 @@ export function playReminderDoneSound() {
 
 let currentAudio: HTMLAudioElement | null = null;
 
+export function stopSpeech(): void {
+  if (currentAudio) {
+    try {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
+      currentAudio.src = '';
+    } catch {}
+    currentAudio = null;
+  }
+  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+    try {
+      window.speechSynthesis.cancel();
+    } catch {}
+  }
+}
+
 export async function speakGentleText(
   text: string,
   lang: string = 'en-IN',
@@ -89,12 +105,8 @@ export async function speakGentleText(
 ): Promise<void> {
   if (typeof window === 'undefined' || !text?.trim()) return;
 
-  // Stop any currently playing audio
-  if (currentAudio) {
-    currentAudio.pause();
-    currentAudio.src = '';
-    currentAudio = null;
-  }
+  // Stop any currently playing audio immediately
+  stopSpeech();
 
   // Map lang code for edge-tts (e.g. 'en-IN' → 'en', 'hi-IN' → 'hi')
   const langCode = lang.split('-')[0] || 'en';
