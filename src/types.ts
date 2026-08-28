@@ -54,6 +54,7 @@ export interface PatientProfile {
   region: string;
   city: string;
   preferredLanguage: SupportedLanguage;
+  voiceLanguage?: SupportedLanguage;
   textSize: TextSize;
   culturalPreference: CulturalTheme;
   voiceEnabled: boolean;

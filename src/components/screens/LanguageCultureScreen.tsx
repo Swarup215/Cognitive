@@ -9,15 +9,18 @@ import {
   Wifi, 
   Save, 
   Sparkles, 
-  CheckCircle2 
+  CheckCircle2,
+  Headphones
 } from 'lucide-react';
 import { TextSize, SupportedLanguage, CulturalTheme } from '../../types';
+import { speakGentleText } from '../../utils/audioSynth';
 
 export const LanguageCultureScreen: React.FC = () => {
   const { patient, updatePatient, navigate, t, speak } = useApp();
 
   const [textSize, setTextSize] = useState<TextSize>(patient.textSize);
   const [lang, setLang] = useState<SupportedLanguage>(patient.preferredLanguage);
+  const [voiceLang, setVoiceLang] = useState<SupportedLanguage>(patient.voiceLanguage || patient.preferredLanguage);
   const [culture, setCulture] = useState<CulturalTheme>(patient.culturalPreference);
   const [voiceEnabled, setVoiceEnabled] = useState<boolean>(patient.voiceEnabled);
   const [offlineEnabled, setOfflineEnabled] = useState<boolean>(patient.offlineEnabled);
@@ -36,6 +39,13 @@ export const LanguageCultureScreen: React.FC = () => {
     { id: 'nag', label: 'Nagamese', regional: 'Nagamese Creole' },
   ];
 
+  const voiceLanguagesList: { id: SupportedLanguage; label: string; regional: string }[] = [
+    { id: 'en', label: 'English (India)', regional: 'Neerja (Neural Voice)' },
+    { id: 'hi', label: 'Hindi', regional: 'Swara (Neural Voice)' },
+    { id: 'as', label: 'Assamese', regional: 'Yashica (Neural Voice)' },
+    { id: 'bn', label: 'Bengali', regional: 'Tanishaa (Neural Voice)' },
+  ];
+
   const culturalThemes: { id: CulturalTheme; title: string; subtitle: string; icon: string }[] = [
     { id: 'ner-default', title: 'North Eastern India (Pan-Regional)', subtitle: 'Rhino, Hornbill, Tea, Living Root Bridges & Bamboo', icon: '🌿' },
     { id: 'assam-tea', title: 'Assam Green Valleys', subtitle: 'Kaziranga wildlife, Muga silk and fragrant tea gardens', icon: '🍃' },
@@ -49,12 +59,25 @@ export const LanguageCultureScreen: React.FC = () => {
     updatePatient({
       textSize,
       preferredLanguage: lang,
+      voiceLanguage: voiceLang,
       culturalPreference: culture,
       voiceEnabled,
       offlineEnabled,
     });
     setSavedFeedback(true);
-    speak("Your personalization preferences have been saved locally.");
+    
+    // Construct welcome message in selected voice language if possible
+    let saveMessage = "Your personalization preferences have been saved locally.";
+    if (voiceLang === 'hi') {
+      saveMessage = "आपकी प्राथमिकताएं सुरक्षित कर ली गई हैं।";
+    } else if (voiceLang === 'as') {
+      saveMessage = "আপোনাৰ পছন্দসমূহ স্থানীয়ভাৱে সংৰক্ষণ কৰা হৈছে।";
+    } else if (voiceLang === 'bn') {
+      saveMessage = "আপনার পছন্দগুলি সফলভাবে সংরক্ষণ করা হয়েছে।";
+    }
+    
+    // Play test speech immediately upon saving
+    speak(saveMessage);
     setTimeout(() => {
       setSavedFeedback(false);
       navigate('home');
@@ -159,11 +182,53 @@ export const LanguageCultureScreen: React.FC = () => {
         </div>
       </div>
 
-      {/* 3. Cultural Experience Theme */}
+      {/* 3. Voice Assistant & Audio Language */}
+      <div className="bg-white rounded-3xl p-6 sm:p-7 border border-emerald-100 shadow-xs space-y-4">
+        <div className="flex items-center gap-2">
+          <Headphones className="w-5 h-5 text-emerald-700" />
+          <h2 className="text-lg font-bold text-emerald-950">3. Voice Assistant & Audio Language</h2>
+        </div>
+        <p className="text-xs sm:text-sm text-emerald-700 font-medium">
+          Choose the language Sathi uses to read out loud. Tap a language to hear a preview.
+        </p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          {voiceLanguagesList.map(item => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => {
+                setVoiceLang(item.id);
+                // Preview voice instantly when tapped
+                let previewText = "Hello! This is my voice.";
+                if (item.id === 'hi') previewText = "नमस्ते! यह मेरी आवाज़ है।";
+                else if (item.id === 'as') previewText = "নমস্কাৰ! এইয়া মোৰ মাত।";
+                else if (item.id === 'bn') previewText = "নমস্কার! এটি আমার কণ্ঠস্বর।";
+                speakGentleText(previewText, item.id, patient.voiceSpeed);
+              }}
+              className={`p-3.5 rounded-2xl border-2 flex flex-col text-left justify-between transition-all cursor-pointer ${
+                voiceLang === item.id
+                  ? 'bg-emerald-100 border-emerald-600 text-emerald-950 shadow-xs ring-2 ring-emerald-300 font-bold'
+                  : 'bg-emerald-50/40 border-emerald-200 text-emerald-800 hover:bg-emerald-100/60 font-medium'
+              }`}
+            >
+              <div className="flex justify-between items-start w-full">
+                <span className="text-sm block font-bold">{item.label}</span>
+                {voiceLang === item.id && (
+                  <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
+                )}
+              </div>
+              <span className="text-xs text-emerald-700 block mt-1">{item.regional}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* 4. Cultural Experience Theme */}
       <div className="bg-white rounded-3xl p-6 sm:p-7 border border-emerald-100 shadow-xs space-y-4">
         <div className="flex items-center gap-2">
           <Leaf className="w-5 h-5 text-emerald-700" />
-          <h2 className="text-lg font-bold text-emerald-950">3. {t.culturalExp}</h2>
+          <h2 className="text-lg font-bold text-emerald-950">4. {t.culturalExp}</h2>
         </div>
         <p className="text-xs sm:text-sm text-emerald-700 font-medium">
           Select regional visual motifs and cultural landmarks for memory cards and games.

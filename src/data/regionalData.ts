@@ -122,6 +122,7 @@ export const INITIAL_DEMO_PATIENT: PatientProfile = {
   region: 'North Eastern India',
   city: 'Guwahati, Assam',
   preferredLanguage: 'en',
+  voiceLanguage: 'en',
   textSize: 'medium',
   culturalPreference: 'ner-default',
   voiceEnabled: true,

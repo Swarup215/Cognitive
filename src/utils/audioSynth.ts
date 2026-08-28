@@ -78,24 +78,52 @@ export function playReminderDoneSound() {
   setTimeout(() => playGentleTone(659.25, 'sine', 0.25, 0.12), 110);
 }
 
-// Speech synthesis wrapper for Sathi voice assistant
-export function speakGentleText(text: string, lang: string = 'en-IN', rate: number = 0.9) {
-  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+// Speech synthesis wrapper — uses Microsoft Edge TTS neural voices via backend proxy
+
+let currentAudio: HTMLAudioElement | null = null;
+
+export async function speakGentleText(
+  text: string,
+  lang: string = 'en-IN',
+  rate: number = 0.9
+): Promise<void> {
+  if (typeof window === 'undefined' || !text?.trim()) return;
+
+  // Stop any currently playing audio
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio.src = '';
+    currentAudio = null;
+  }
+
+  // Map lang code for edge-tts (e.g. 'en-IN' → 'en', 'hi-IN' → 'hi')
+  const langCode = lang.split('-')[0] || 'en';
+
   try {
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = rate;
-    utterance.pitch = 1.0;
-    
-    // Pick suitable voice
-    const voices = window.speechSynthesis.getVoices();
-    const preferredVoice = voices.find(v => v.lang.includes('IN') || v.lang.includes(lang));
-    if (preferredVoice) {
-      utterance.voice = preferredVoice;
-    }
-    
-    window.speechSynthesis.speak(utterance);
+    const params = new URLSearchParams({ text, lang: langCode, rate: String(rate) });
+    const response = await fetch(`/api/tts?${params.toString()}`);
+
+    if (!response.ok) throw new Error(`TTS backend error: ${response.status}`);
+
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+
+    const audio = new Audio(url);
+    currentAudio = audio;
+
+    audio.onended = () => {
+      URL.revokeObjectURL(url);
+      currentAudio = null;
+    };
+    audio.onerror = () => {
+      URL.revokeObjectURL(url);
+      currentAudio = null;
+    };
+
+    await audio.play();
   } catch (e) {
-    console.debug('Speech synth error:', e);
+    console.debug('[edge-tts] Audio playback error:', e);
   }
 }
+
+
