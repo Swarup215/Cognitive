@@ -252,65 +252,34 @@ export const INITIAL_CARE_ALERTS: CareAlert[] = [
 ];
 
 export const INITIAL_COGNITIVE_METRICS: CognitiveMetrics = {
-  weeklyActivityScore: 82,
-  accuracyGrowth: 8,
-  gamesCompletedThisWeek: 18,
-  avgSessionDurationMin: 12,
-  memoryScore: 86,
-  attentionScore: 79,
-  recallScore: 81,
-  patternScore: 84,
+  weeklyActivityScore: 0,
+  accuracyGrowth: 0,
+  gamesCompletedThisWeek: 0,
+  avgSessionDurationMin: 0,
+  memoryScore: 0,
+  attentionScore: 0,
+  recallScore: 0,
+  patternScore: 0,
   dailyActivityMinutes: [
-    { day: 'Mon', minutes: 14, completed: true },
-    { day: 'Tue', minutes: 18, completed: true },
-    { day: 'Wed', minutes: 12, completed: true },
-    { day: 'Thu', minutes: 19, completed: true },
-    { day: 'Fri', minutes: 16, completed: true },
-    { day: 'Sat', minutes: 20, completed: true },
-    { day: 'Sun', minutes: 15, completed: true },
+    { day: 'Mon', minutes: 0, completed: false },
+    { day: 'Tue', minutes: 0, completed: false },
+    { day: 'Wed', minutes: 0, completed: false },
+    { day: 'Thu', minutes: 0, completed: false },
+    { day: 'Fri', minutes: 0, completed: false },
+    { day: 'Sat', minutes: 0, completed: false },
+    { day: 'Sun', minutes: 0, completed: false },
   ],
-  adaptiveRecommendation: 'Asha shows high accuracy in visual pattern and memory match games. Maintaining current gentle difficulty level.',
+  adaptiveRecommendation: 'No activity recorded yet. Encourage Asha to try a game to begin tracking cognitive engagement.',
 };
 
-export const RECENT_GAME_SESSIONS = [
-  {
-    id: 'sess_1',
-    game: 'memory-match' as const,
-    score: 920,
-    accuracy: 86,
-    duration: 180,
-    difficulty: 'Moderate' as const,
-    completedAt: 'Today, 4:30 PM',
-    synced: true,
-  },
-  {
-    id: 'sess_2',
-    game: 'pattern-garden' as const,
-    score: 750,
-    accuracy: 79,
-    duration: 120,
-    difficulty: 'Easy' as const,
-    completedAt: 'Yesterday, 5:10 PM',
-    synced: true,
-  },
-  {
-    id: 'sess_3',
-    game: 'daily-recall' as const,
-    score: 880,
-    accuracy: 81,
-    duration: 95,
-    difficulty: 'Easy' as const,
-    completedAt: 'Today, 11:00 AM',
-    synced: true,
-  },
-  {
-    id: 'sess_4',
-    game: 'candy-match' as const,
-    score: 1140,
-    accuracy: 88,
-    duration: 210,
-    difficulty: 'Easy' as const,
-    completedAt: '2 days ago',
-    synced: true,
-  },
-];
+// No pre-seeded sessions — analytics start at zero and grow as the user plays
+export const RECENT_GAME_SESSIONS: {
+  id: string;
+  game: 'memory-match' | 'candy-match' | 'pattern-garden' | 'object-recall' | 'daily-recall';
+  score: number;
+  accuracy: number;
+  duration: number;
+  difficulty: 'Easy' | 'Moderate' | 'Hard';
+  completedAt: string;
+  synced: boolean;
+}[] = [];

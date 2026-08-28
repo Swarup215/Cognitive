@@ -60,11 +60,11 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 const STORAGE_KEYS = {
-  PATIENT: 'mindmate_patient_v1',
-  REMINDERS: 'mindmate_reminders_v1',
-  SESSIONS: 'mindmate_sessions_v1',
-  ALERTS: 'mindmate_alerts_v1',
-  CAREGIVERS: 'mindmate_caregivers_v1',
+  PATIENT: 'mindmate_patient_v2',
+  REMINDERS: 'mindmate_reminders_v2',
+  SESSIONS: 'mindmate_sessions_v2',
+  ALERTS: 'mindmate_alerts_v2',
+  CAREGIVERS: 'mindmate_caregivers_v2',
 };
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -161,35 +161,62 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const patternSessions = gameSessions.filter(s => s.game === 'pattern-garden' || s.game === 'candy-match');
     const recallSessions = gameSessions.filter(s => s.game === 'object-recall' || s.game === 'daily-recall');
 
-    const avgAccuracy = (list: GameSession[], fallback: number) => {
-      if (list.length === 0) return fallback;
+    const avgAccuracy = (list: GameSession[]) => {
+      if (list.length === 0) return 0;
       const sum = list.reduce((acc, curr) => acc + curr.accuracy, 0);
       return Math.round(sum / list.length);
     };
 
-    const memScore = avgAccuracy(memSessions, 86);
-    const patScore = avgAccuracy(patternSessions, 84);
-    const recScore = avgAccuracy(recallSessions, 81);
-    const attScore = Math.round((memScore * 0.4) + (patScore * 0.6));
-    const overallWeekly = Math.round((memScore + patScore + recScore + attScore) / 4);
+    const memScore = avgAccuracy(memSessions);
+    const patScore = avgAccuracy(patternSessions);
+    const recScore = avgAccuracy(recallSessions);
+    // Attention is derived from memory + pattern (only when at least one has data)
+    const attScore = (memScore === 0 && patScore === 0)
+      ? 0
+      : Math.round((memScore * 0.4) + (patScore * 0.6));
+    const activeScores = [memScore, patScore, recScore, attScore].filter(s => s > 0);
+    const overallWeekly = activeScores.length > 0
+      ? Math.round(activeScores.reduce((a, b) => a + b, 0) / activeScores.length)
+      : 0;
 
-    let rec = 'Performance is stable and calm. Keeping gentle activity pace.';
+    const avgDuration = gameSessions.length > 0
+      ? Math.round(gameSessions.reduce((acc, s) => acc + (s.duration || 0), 0) / gameSessions.length / 60)
+      : 0;
+
+    let rec = 'Keep going! Each activity helps build cognitive engagement.';
     if (overallWeekly > 85) {
       rec = 'Excellent visual recognition and recall! Adapting with slightly richer patterns while keeping experience stress-free.';
-    } else if (overallWeekly < 60) {
+    } else if (overallWeekly > 0 && overallWeekly < 60) {
       rec = 'Providing extra visual cues and generous time allowances to keep activities relaxing.';
+    } else if (overallWeekly === 0) {
+      rec = 'No activity recorded yet. Encourage Asha to try a game to begin tracking cognitive engagement.';
     }
+
+    // Build daily activity minutes from sessions — update today's day column
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const todayIdx = new Date().getDay();
+    const todayMinutes = Math.round(
+      gameSessions
+        .filter(s => s.completedAt === 'Just now' || s.completedAt?.startsWith('Today'))
+        .reduce((acc, s) => acc + (s.duration || 0), 0) / 60
+    );
+    const dailyActivityMinutes = INITIAL_COGNITIVE_METRICS.dailyActivityMinutes.map((d, i) => {
+      if (days[todayIdx] === d.day) {
+        return { ...d, minutes: todayMinutes, completed: todayMinutes > 0 };
+      }
+      return d;
+    });
 
     return {
       weeklyActivityScore: overallWeekly,
-      accuracyGrowth: 8,
-      gamesCompletedThisWeek: gameSessions.length + 14,
-      avgSessionDurationMin: 12,
+      accuracyGrowth: 0,
+      gamesCompletedThisWeek: gameSessions.length,
+      avgSessionDurationMin: avgDuration,
       memoryScore: memScore,
       attentionScore: attScore,
       recallScore: recScore,
       patternScore: patScore,
-      dailyActivityMinutes: INITIAL_COGNITIVE_METRICS.dailyActivityMinutes,
+      dailyActivityMinutes,
       adaptiveRecommendation: rec,
     };
   }, [gameSessions]);
