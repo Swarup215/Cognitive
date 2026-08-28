@@ -123,19 +123,25 @@ export async function speakGentleText(
     const audio = new Audio(url);
     currentAudio = audio;
 
-    audio.onended = () => {
-      URL.revokeObjectURL(url);
-      currentAudio = null;
-    };
-    audio.onerror = () => {
-      URL.revokeObjectURL(url);
-      currentAudio = null;
-    };
-
-    await audio.play();
+    return new Promise<void>((resolve) => {
+      audio.onended = () => {
+        URL.revokeObjectURL(url);
+        currentAudio = null;
+        resolve();
+      };
+      audio.onerror = () => {
+        URL.revokeObjectURL(url);
+        currentAudio = null;
+        resolve();
+      };
+      audio.play().catch((err) => {
+        console.debug('[edge-tts] Audio play error:', err);
+        URL.revokeObjectURL(url);
+        currentAudio = null;
+        resolve();
+      });
+    });
   } catch (e) {
     console.debug('[edge-tts] Audio playback error:', e);
   }
 }
-
-
