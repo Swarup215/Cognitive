@@ -18,7 +18,7 @@ const DEMO_STEPS = [
 ];
 
 export const JudgeDemoBanner: React.FC = () => {
-  const { judgeDemoActive, judgeDemoStep, nextJudgeDemoStep, closeJudgeDemo } = useApp();
+  const { judgeDemoActive, judgeDemoStep, nextJudgeDemoStep, prevJudgeDemoStep, closeJudgeDemo } = useApp();
 
   if (!judgeDemoActive) return null;
 
@@ -26,37 +26,48 @@ export const JudgeDemoBanner: React.FC = () => {
 
   return (
     <div 
-      className="bg-gradient-to-r from-amber-500 via-amber-600 to-emerald-700 text-white px-4 py-2.5 shadow-md sticky top-[69px] z-30 transition-all border-b border-amber-400/50"
+      className="fixed bottom-[72px] left-3 right-3 sm:left-6 sm:right-6 max-w-4xl mx-auto z-50 bg-gradient-to-r from-amber-600 via-amber-700 to-emerald-800 text-white px-4 py-3 shadow-2xl rounded-2xl border border-amber-300/60 backdrop-blur-md transition-all animate-in slide-in-from-bottom duration-300"
       id="judge-demo-banner"
     >
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2.5">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
         
         {/* Step Indicator & Description */}
-        <div className="flex items-center gap-3 w-full md:w-auto">
-          <div className="w-8 h-8 rounded-full bg-white text-amber-900 font-bold flex items-center justify-center text-xs shrink-0 shadow-xs">
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          <div className="w-9 h-9 rounded-xl bg-white text-amber-950 font-black flex items-center justify-center text-xs shrink-0 shadow-md">
             {judgeDemoStep}/12
           </div>
-          <div>
+          <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
-              <span className="font-bold text-sm sm:text-base tracking-wide flex items-center gap-1.5">
-                <Sparkles className="w-4 h-4 text-amber-200" />
+              <span className="font-bold text-sm sm:text-base tracking-wide flex items-center gap-1.5 truncate">
+                <Sparkles className="w-4 h-4 text-amber-200 shrink-0" />
                 {currentStepInfo.title}
               </span>
-              <span className="text-[10px] bg-white/20 px-2 py-0.5 rounded-full font-semibold">
-                SIH Eval Flow
+              <span className="text-[10px] bg-white/20 px-2 py-0.5 rounded-full font-semibold shrink-0">
+                Judge Demo Flow
               </span>
             </div>
-            <p className="text-xs text-amber-100 line-clamp-1">
+            <p className="text-xs text-amber-100/90 truncate">
               {currentStepInfo.desc}
             </p>
           </div>
         </div>
 
         {/* Action Controls */}
-        <div className="flex items-center gap-2 w-full md:w-auto justify-end">
+        <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-end">
+          {judgeDemoStep > 1 && (
+            <button
+              onClick={prevJudgeDemoStep}
+              className="bg-white/15 hover:bg-white/25 text-white px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer border border-white/20"
+              id="demo-prev-step-btn"
+              title="Previous Step"
+            >
+              <span>Prev</span>
+            </button>
+          )}
+
           <button
             onClick={nextJudgeDemoStep}
-            className="bg-white text-emerald-950 hover:bg-amber-100 px-4 py-1.5 rounded-xl text-xs font-bold shadow-xs flex items-center gap-1.5 transition-all cursor-pointer"
+            className="bg-amber-100 hover:bg-white text-amber-950 px-4 py-1.5 rounded-xl text-xs font-extrabold shadow-md flex items-center gap-1.5 transition-all cursor-pointer hover:scale-105 active:scale-95"
             id="demo-next-step-btn"
           >
             <span>{judgeDemoStep === 12 ? 'Finish Tour' : 'Next Step'}</span>
@@ -65,12 +76,12 @@ export const JudgeDemoBanner: React.FC = () => {
           
           <button
             onClick={closeJudgeDemo}
-            className="p-1.5 rounded-xl hover:bg-white/20 text-white/90 hover:text-white transition-all cursor-pointer"
+            className="p-1.5 rounded-xl hover:bg-white/20 text-white/80 hover:text-white transition-all cursor-pointer ml-1"
             id="demo-close-btn"
             title="Exit demo tour"
             aria-label="Close demo tour"
           >
-            <X className="w-4 h-4" />
+            <X className="w-4.5 h-4.5" />
           </button>
         </div>
 

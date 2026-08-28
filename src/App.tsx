@@ -79,16 +79,16 @@ const AppContent: React.FC = () => {
 
   return (
     <div className={`min-h-screen bg-emerald-50/40 text-emerald-950 flex flex-col font-sans selection:bg-emerald-200 selection:text-emerald-950 ${textSizeClass}`}>
-      {/* SIH Judge / Evaluation Tour Interactive Banner */}
-      <JudgeDemoBanner />
-
       {/* Main Accessible Header */}
       <Header />
 
       {/* Main Dynamic View Content */}
-      <main className="flex-1 w-full animate-in fade-in duration-150">
+      <main className="flex-1 w-full animate-in fade-in duration-150 pb-28">
         {renderCurrentView()}
       </main>
+
+      {/* SIH Judge / Evaluation Tour Interactive Banner */}
+      <JudgeDemoBanner />
 
       {/* Accessible Fixed Bottom Navigation */}
       <BottomNavigation />

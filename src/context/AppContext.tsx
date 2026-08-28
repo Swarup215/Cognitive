@@ -52,6 +52,7 @@ interface AppContextType {
   judgeDemoStep: number;
   startJudgeDemo: () => void;
   nextJudgeDemoStep: () => void;
+  prevJudgeDemoStep: () => void;
   closeJudgeDemo: () => void;
   speak: (text: string) => void;
   resetAllData: () => void;
@@ -366,6 +367,33 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
+  const prevJudgeDemoStep = () => {
+    const prev = judgeDemoStep - 1;
+    if (prev < 1) return;
+    setJudgeDemoStep(prev);
+    switch (prev) {
+      case 1: navigate('home'); break;
+      case 2: navigate('games'); break;
+      case 3: navigate('candy-match'); break;
+      case 4: navigate('memory-match'); break;
+      case 5: navigate('pattern-garden'); break;
+      case 6: navigate('daily-recall'); break;
+      case 7: navigate('reminders'); break;
+      case 8: navigate('caregiver'); break;
+      case 9: navigate('cognitive-report'); break;
+      case 10: navigate('language-culture'); break;
+      case 11: 
+        setNetworkStatusState('offline');
+        navigate('home'); 
+        break;
+      case 12: 
+        triggerManualSync();
+        navigate('caregiver'); 
+        break;
+      default: navigate('home'); break;
+    }
+  };
+
   const closeJudgeDemo = () => {
     setJudgeDemoActive(false);
     setJudgeDemoStep(0);
@@ -402,6 +430,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         judgeDemoStep,
         startJudgeDemo,
         nextJudgeDemoStep,
+        prevJudgeDemoStep,
         closeJudgeDemo,
         speak,
         resetAllData,

@@ -65,7 +65,7 @@ export interface TranslationStrings {
 
 export const translations: Record<SupportedLanguage, TranslationStrings> = {
   en: {
-    appName: 'MINDMATE NER',
+    appName: 'MINDMATE',
     tagline: 'Cognitive care • memory • daily support',
     modeSathi: 'Sathi (Elderly)',
     modeCommand: 'Command (Caregiver)',
@@ -127,7 +127,7 @@ export const translations: Record<SupportedLanguage, TranslationStrings> = {
     encourageTakeTime: 'Take all the time you need.',
   },
   hi: {
-    appName: 'माइंडमेट NER',
+    appName: 'माइंडमेट',
     tagline: 'संज्ञानात्मक देखभाल • स्मृति • दैनिक सहयोग',
     modeSathi: 'साथी (बुजुर्ग)',
     modeCommand: 'कमांड (देखभालकर्ता)',
@@ -189,7 +189,7 @@ export const translations: Record<SupportedLanguage, TranslationStrings> = {
     encourageTakeTime: 'आराम से समय लेकर खेलें।',
   },
   as: {
-    appName: 'মাইণ্ডমেট NER',
+    appName: 'মাইণ্ডমেট',
     tagline: 'জ্ঞানমূলক যত্ন • স্মৃতি • দৈনিক সহায়',
     modeSathi: 'সাৰথী (জেষ্ঠ)',
     modeCommand: 'কমাণ্ড (তত্ত্বাৱধায়ক)',
@@ -251,7 +251,7 @@ export const translations: Record<SupportedLanguage, TranslationStrings> = {
     encourageTakeTime: 'ধীৰে সুস্থে সময় লৈ কৰক।',
   },
   bn: {
-    appName: 'মাইন্ডমেট NER',
+    appName: 'মাইন্ডমেট',
     tagline: 'জ্ঞানীয় যত্ন • স্মৃতি • দৈনন্দিন সাহায্য',
     modeSathi: 'সাথী (জ্যেষ্ঠ)',
     modeCommand: 'কমান্ড (তত্ত্বাবধায়ক)',
