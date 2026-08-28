@@ -312,7 +312,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const speak = (text: string) => {
     if (patient.voiceEnabled) {
-      speakGentleText(text, patient.preferredLanguage === 'hi' ? 'hi-IN' : 'en-IN', patient.voiceSpeed);
+      speakGentleText(text, patient.preferredLanguage, patient.voiceSpeed);
     }
   };
 
